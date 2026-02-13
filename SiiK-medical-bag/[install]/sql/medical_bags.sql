@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS `SiiK_medical_bags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `stash_id` VARCHAR(64) NOT NULL,
+  `owner_cid` VARCHAR(64) NULL,
+  `x` DOUBLE NOT NULL,
+  `y` DOUBLE NOT NULL,
+  `z` DOUBLE NOT NULL,
+  `h` DOUBLE NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_stash_id` (`stash_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
