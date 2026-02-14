@@ -1,5 +1,18 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
+local BridgeRes = Config.BridgeResource or 'SiiK-bridge'
+
+local function getInvKey()
+    if Config.UseBridge and GetResourceState(BridgeRes) == 'started' then
+        local ok, key = pcall(function()
+            return exports[BridgeRes]:GetActiveInventory()
+        end)
+        if ok and key and key ~= '' then return key end
+    end
+    return Config.Inventory or 'qb'
+end
+
+
 local Placed = {} -- [bagId] = { entity=..., stash_id=..., x=..., y=..., z=..., h=... }
 
 local placing = false
@@ -313,3 +326,4 @@ RegisterNetEvent('SiiK-medical-bag:client:OpenStashCodem', function(stashId, oth
     -- CodeM mInventory Remake docs: TriggerServerEvent('codem-inventory:server:openstash', stashId, slots, weight, label)
     TriggerServerEvent('codem-inventory:server:openstash', stashId, other.slots, other.maxweight, other.label)
 end)
+
