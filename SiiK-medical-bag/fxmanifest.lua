@@ -22,5 +22,6 @@ server_scripts {
 dependencies {
   'qb-core',
   'qb-target',
+  'SiiK-bridge',
   'oxmysql'
 }
