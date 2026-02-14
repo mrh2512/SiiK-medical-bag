@@ -1,6 +1,3 @@
-# SiiK-medical-bag
-fivem qbcore medical bag
-
 🩺 SiiK Medical Bag (QBCore)
 
 A simple and optimized medical bag system for QBCore servers with multi-inventory support.
@@ -113,3 +110,22 @@ If using qs-inventory, make sure it supports RegisterStash
 If using codem-inventory, ensure you are using the mInventory Remake version
 
 Do not run multiple inventory systems at the same time
+   ```
+4. Add item to your items file (e.g. `qb-core/shared/items.lua`):
+   ```lua
+["medicalbag"]         = {["name"] = "medicalbag",       ["label"] = "Medical Bag",       ["weight"] = 300,     ["type"] = "item",         ["image"] = "medicalbag.png",        ["unique"] = true,     ["useable"] = true,     ["shouldClose"] = true,   ["combinable"] = nil, ["description"] = "Medical Bag"},
+   ```
+5. Put `medicalbag.png` into your inventory images folder.
+
+## Notes
+- Bag stash open tries multiple compatible methods (export + client events).
+- Pickup requires stash to be empty; if your inventory build doesn't expose stash-read exports, pickup refuses (anti-dupe safety).
+
+## Notes
+- Pickup stores `stash_id` inside the `medicalbag` item metadata (`info.stash_id`).
+- When you place the bag again, the script reuses the same `stash_id`, so your items are still inside.
+
+
+## Inventory Bridge Support
+This version supports `SiiK-bridge` (auto-detect). Ensure `SiiK-bridge` is started before this resource.
+`Config.UseBridge = true` in `shared/config.lua`.
