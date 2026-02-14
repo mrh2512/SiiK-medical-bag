@@ -1,5 +1,41 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
+local BridgeRes = Config.BridgeResource or 'SiiK-bridge'
+
+local function getInvKey()
+    if Config.UseBridge and GetResourceState(BridgeRes) == 'started' then
+        local ok, key = pcall(function()
+            return exports[BridgeRes]:GetActiveInventory()
+        end)
+        if ok and key and key ~= '' then return key end
+    end
+    return Config.Inventory or 'qb'
+end
+
+local function getInvResource()
+    local key = getInvKey()
+    return (Config.InventoryResources and Config.InventoryResources[key]) or key or 'qb-inventory'
+end
+
+local function invRemoveItem(src, item, amount, slot)
+    if Config.UseBridge and GetResourceState(BridgeRes) == 'started' then
+        return exports[BridgeRes]:RemoveItem(src, item, amount or 1, slot)
+    end
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return false end
+    return Player.Functions.RemoveItem(item, amount or 1, slot or false)
+end
+
+local function invAddItem(src, item, amount, info, slot)
+    if Config.UseBridge and GetResourceState(BridgeRes) == 'started' then
+        return exports[BridgeRes]:AddItem(src, item, amount or 1, info, slot)
+    end
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return false end
+    return Player.Functions.AddItem(item, amount or 1, slot or false, info)
+end
+
+
 local function isAllowedJob(src)
     local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return false end
@@ -17,16 +53,11 @@ local function makeStashId(ownerCid)
 end
 
 local function invType()
-    return (Config.Inventory or 'qb'):lower()
+    return (getInvKey() or 'qb'):lower()
 end
 
 local function invName()
-    local t = invType()
-    if Config.InventoryResources and Config.InventoryResources[t] then
-        return Config.InventoryResources[t]
-    end
-    -- backwards-compat (older config versions)
-    return Config.InventoryResource or 'qb-inventory'
+    return getInvResource() or 'qb-inventory'
 end
 
 
@@ -84,9 +115,9 @@ RegisterNetEvent('SiiK-medical-bag:server:PlaceBag', function(data)
     local slot = (type(data.item) == 'table' and data.item.slot) and tonumber(data.item.slot) or nil
     local removed = false
     if slot then
-        removed = Player.Functions.RemoveItem(Config.BagItem, 1, slot)
+        removed = invRemoveItem(src, Config.BagItem, 1, slot)
     else
-        removed = Player.Functions.RemoveItem(Config.BagItem, 1, false)
+        removed = invRemoveItem(src, Config.BagItem, 1, false)
     end
 
     if not removed then
@@ -106,7 +137,7 @@ RegisterNetEvent('SiiK-medical-bag:server:PlaceBag', function(data)
     if not insertId then
         -- give item back if DB insert failed (preserve stash_id)
         local info = { stash_id = stashId }
-        local added = Player.Functions.AddItem(Config.BagItem, 1, slot or false, info)
+        local added = invAddItem(src, Config.BagItem, 1, info, slot or false)
         if added then
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[Config.BagItem], 'add', 1)
         end
@@ -240,7 +271,7 @@ RegisterNetEvent('SiiK-medical-bag:server:PickupBag', function(bagId)
 
     -- Give the bag item back WITH metadata so it keeps the same stash_id when re-placed
     local info = { stash_id = row.stash_id }
-    local added = Player.Functions.AddItem(Config.BagItem, 1, false, info)
+    local added = invAddItem(src, Config.BagItem, 1, info, false)
     if not added then
         notify(src, "No space to pick up the bag.", 'error')
         return
