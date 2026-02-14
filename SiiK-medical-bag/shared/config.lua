@@ -1,9 +1,14 @@
 Config = Config or {}
 
+-- If true, uses exports from SiiK-bridge to auto-detect inventory + add/remove items.
+-- Keep Config.Inventory as a fallback if bridge isn't running.
+Config.UseBridge = true
+Config.BridgeResource = 'SiiK-bridge'
+
 -- Inventory support:
 -- qb-inventory, ps-inventory, lj-inventory, qs-inventory (Quasar), codem-inventory (mInventory Remake)
 -- Set Config.Inventory to the system you use.
-Config.Inventory = 'qb' -- 'qb' | 'ps' | 'lj' | 'qs' | 'codem'
+Config.Inventory = 'qb' -- (fallback if bridge disabled/not running) 'qb' | 'ps' | 'lj' | 'qs' | 'codem'
 
 -- Resource names (change only if you renamed the inventory resource folder)
 Config.InventoryResources = {
