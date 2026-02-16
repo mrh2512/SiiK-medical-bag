@@ -1,5 +1,7 @@
 🩺 SiiK Medical Bag (QBCore)
 
+https://github.com/mrh2512/SiiK-bridge
+
 A simple and optimized medical bag system for QBCore servers with multi-inventory support.
 
 Players can place and open a medical bag which acts as a stash. Supports multiple popular inventory systems via configuration.
