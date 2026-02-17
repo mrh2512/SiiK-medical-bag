@@ -1,133 +1,211 @@
-🩺 SiiK Medical Bag (QBCore)
+A portable personal stash system for medical roleplay.
 
-https://github.com/mrh2512/SiiK-bridge
+Supports:
 
-A simple and optimized medical bag system for QBCore servers with multi-inventory support.
+✅ qb-inventory v2.0.0+
 
-Players can place and open a medical bag which acts as a stash. Supports multiple popular inventory systems via configuration.
+✅ qs-inventory
 
-✅ Supported Inventories
+✅ Gamebuild 3095+
 
-You can now choose which inventory system to use directly in the config.
+✅ Auto stash registration
 
-Supported:
+✅ Safe model loading with fallback
 
-qb-inventory
+📦 Requirements
 
-ps-inventory
+qb-core
 
-lj-inventory
+qb-inventory v2.0.0+ OR
 
-qs-inventory (Quasar Inventory)
+qs-inventory
 
-codem-inventory (mInventory Remake)
+Gamebuild 3095+ recommended
 
-📦 Installation
+🔧 INSTALLATION GUIDE
+1️⃣ Place Resource
 
-Place the resource in your resources folder.
+Drop the folder into:
 
-Ensure the resource in server.cfg:
+resources/[qb]/SiiK-medical-bag
+
+
+Add to server.cfg:
 
 ensure SiiK-medical-bag
 
 
-Set your preferred inventory in shared/config.lua.
+Make sure it starts after:
 
-⚙️ Configuration
+ensure qb-core
+ensure qb-inventory (or qs-inventory)
+
+2️⃣ Add The Item (VERY IMPORTANT)
+
+Open:
+
+qb-inventory/shared/items.lua
+
+
+Add:
+
+["medicalbag"] = {
+    name = "medicalbag",
+    label = "Medical Bag",
+    weight = 1000,
+    type = "item",
+    image = "medicalbag.png",
+    unique = true,
+    useable = true,
+    shouldClose = true,
+    description = "A portable medical supply bag."
+},
+
+
+⚠️ unique = true is REQUIRED
+⚠️ The name MUST match:
+
+Config.BagItem = "medicalbag"
+
+
+Restart your server after adding the item.
+
+3️⃣ Configure Inventory Type
 
 Open:
 
 shared/config.lua
 
-Select Inventory
-Config.Inventory = 'qb' -- 'qb' | 'ps' | 'lj' | 'qs' | 'codem'
 
-If Your Inventory Folder Has a Custom Name
-Config.InventoryResources = {
-  qb = 'qb-inventory',
-  ps = 'ps-inventory',
-  lj = 'lj-inventory',
-  qs = 'qs-inventory',
-  codem = 'codem-inventory',
+Set one of these:
+
+For qb-inventory v2:
+Config.Inventory = 'qb'
+
+For qs-inventory:
+Config.Inventory = 'qs'
+
+4️⃣ Stash Settings
+
+Inside config:
+
+Config.Stash = {
+    slots = 20,
+    weight = 10000, -- qb-inventory uses grams (10000 = 10kg)
 }
 
 
-If you renamed your inventory resource, change it here.
+Adjust as needed.
 
-Example:
+5️⃣ Job Restriction (Optional)
+Config.JobRestricted = true
 
-qb = 'my-qb-inventory'
+Config.AllowedJobs = {
+    ambulance = true,
+    doctor = true,
+}
+
+
+If disabled:
+
+Config.JobRestricted = false
 
 🧠 How It Works
 
-Depending on your selected inventory:
+Player uses medical bag item
 
-qb / ps / lj → Uses OpenInventory export
+Script generates a unique stash ID
 
-qs-inventory → Uses RegisterStash and opens stash
+Inventory is registered automatically
 
-codem-inventory → Uses codem-inventory:server:openstash event
+Stash opens via qb-inventory v2 or qs-inventory
 
-Each bag creates a unique stash ID to prevent conflicts.
+Each bag has its own storage
 
-🔧 Features
+🎒 Bag Model
 
-Fully QBCore compatible
+Default model:
 
-Multi-inventory support
+xm_prop_x17_bag_med_01a
 
-Unique stash per bag
 
-Clean and optimized code
+If that ever fails to load, the script automatically falls back to:
 
-Easy configuration
+prop_ld_health_pack
 
-Lightweight
 
-❗ Requirements
+You can change it in:
 
-QBCore framework
+shared/config.lua
 
-One of the supported inventory systems
 
-🛠 Troubleshooting
-Bag does not open
+Example:
 
-Make sure your selected inventory matches Config.Inventory
+Config.BagProp = "prop_ld_health_pack"
 
-Ensure the inventory resource name matches Config.InventoryResources
+❗ TROUBLESHOOTING
+❌ SCRIPT ERROR table index is nil
 
-Confirm your inventory is started before this resource in server.cfg
+✔ Make sure:
 
-Example order:
+Config.BagItem = "medicalbag"
 
+
+Matches your item name exactly.
+
+❌ Bag model failed to load
+
+✔ You are on build 3095+
+✔ Config.BagProp is correct
+✔ Resource restarted
+
+If needed, switch to:
+
+Config.BagProp = "prop_ld_health_pack"
+
+❌ Bag opens but stash empty every time
+
+Make sure:
+
+unique = true
+
+
+Is set on the item.
+
+❌ Nothing happens when using bag
+
+Ensure qb-core started first
+
+Ensure inventory started first
+
+Ensure item exists
+
+Restart server fully (not just resource)
+
+🛠 Supported Inventory Functions
+qb-inventory v2:
+
+OpenInventory
+
+RegisterInventory
+
+CreateInventory
+
+GetInventory
+
+qs-inventory:
+
+RegisterStash
+
+OpenInventory
+
+🔥 Recommended Server Order
 ensure qb-core
 ensure qb-inventory
 ensure SiiK-medical-bag
 
-💡 Notes
+❤️ Credits
 
-If using qs-inventory, make sure it supports RegisterStash
-
-If using codem-inventory, ensure you are using the mInventory Remake version
-
-Do not run multiple inventory systems at the same time
-   ```
-4. Add item to your items file (e.g. `qb-core/shared/items.lua`):
-   ```lua
-["medicalbag"]         = {["name"] = "medicalbag",       ["label"] = "Medical Bag",       ["weight"] = 300,     ["type"] = "item",         ["image"] = "medicalbag.png",        ["unique"] = true,     ["useable"] = true,     ["shouldClose"] = true,   ["combinable"] = nil, ["description"] = "Medical Bag"},
-   ```
-5. Put `medicalbag.png` into your inventory images folder.
-
-## Notes
-- Bag stash open tries multiple compatible methods (export + client events).
-- Pickup requires stash to be empty; if your inventory build doesn't expose stash-read exports, pickup refuses (anti-dupe safety).
-
-## Notes
-- Pickup stores `stash_id` inside the `medicalbag` item metadata (`info.stash_id`).
-- When you place the bag again, the script reuses the same `stash_id`, so your items are still inside.
-
-
-## Inventory Bridge Support
-This version supports `SiiK-bridge` (auto-detect). Ensure `SiiK-bridge` is started before this resource.
-`Config.UseBridge = true` in `shared/config.lua`.
+Original script: SiiK
+Updated for qb-inventory v2 & qs-inventory compatibility
+Model loading & stability fixes included.
